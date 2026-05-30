@@ -177,7 +177,6 @@ export const Contact = () => {
                     onChange={set("name")}
                     placeholder="Nama Anda"
                     className="mt-2 bg-surface border-soft rounded-xl h-12"
-                    required
                   />
                 </div>
                 <div>
@@ -192,7 +191,6 @@ export const Contact = () => {
                     onChange={set("email")}
                     placeholder="anda@email.com"
                     className="mt-2 bg-surface border-soft rounded-xl h-12"
-                    required
                   />
                 </div>
               </div>
@@ -209,7 +207,6 @@ export const Contact = () => {
                     onChange={set("phone")}
                     placeholder="+62 ..."
                     className="mt-2 bg-surface border-soft rounded-xl h-12"
-                    required
                   />
                 </div>
                 <div>
