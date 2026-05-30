@@ -1,0 +1,59 @@
+{
+  "summary": "Iteration 2 testing: Auth (JWT), Admin dashboard (inquiries CRUD + blog CRUD), public blog, package detail, SEO meta. 22/23 backend tests passed (1 skipped for non-existent seeded slug). 100% of admin + public frontend flows passed after a frontend restart that was required to pick up the updated /app/frontend/public/index.html SEO tags.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/blog/public/umrah-landing",
+        "issue": "Agent-to-agent context note claims a post with slug 'umrah-landing' was seeded, but the actual seeded slug is 'tips-persiapan-umroh-pertama-kali-untuk-jamaah-indonesia'. Note vs. reality mismatch — no functional bug, just documentation inaccuracy."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "SEO meta tags rendering",
+        "issue": "Initially, public/index.html SEO additions (description, og:*, twitter:*, favicon SVG, theme-color) were NOT served by the CRA dev server because the html-webpack-plugin only re-reads the template on full webpack restart (not on hot-reload). After `sudo supervisorctl restart frontend`, all tags rendered correctly. Main agent should be aware: any future index.html change requires a frontend restart. This is a CRA dev-server limitation, not a code bug.",
+        "affected_selectors": ["meta[name='description']", "meta[property='og:title']", "meta[property='og:image']", "link[rel='icon'][type='image/svg+xml']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_auth_admin_blog.py",
+    "/app/test_reports/pytest/iteration_2_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Update agent context: seeded blog slug is 'tips-persiapan-umroh-pertama-kali-untuk-jamaah-indonesia', not 'umrah-landing'.",
+    "Whenever modifying /app/frontend/public/index.html in the future, run `sudo supervisorctl restart frontend` to ensure changes are served."
+  ],
+  "critical_code_review_comments": [
+    "AdminBlogEditor uses a free-form Textarea for content; markdown preview is rendered on BlogDetail via react-markdown — works fine. Consider adding optimistic UI for save success toast.",
+    "AdminInquiries uses shadcn AlertDialog for delete confirmation — correctly wired. No issues.",
+    "PackageDetail back-link uses `to='/#packages'` (HashLink-style on plain Link); navigates with hash but does NOT scroll to #packages on existing single page (react-router v6 doesn't auto-scroll to fragment). Consider using react-router-hash-link or an effect to scrollIntoView. Minor UX nit.",
+    "Auth: JWT stored in localStorage as 'baba_token'. For production, prefer httpOnly cookie (XSS resilience). Acceptable for MVP.",
+    "Server seed_admin: please verify it is idempotent and updates the password on each startup so env-var rotations propagate (playbook requirement). Not retested here but login worked.",
+    "No brute-force lockout on /api/auth/login — playbook requires lockout after 5 failed attempts. Not implemented yet."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_auth_admin_blog.py (new)"
+  ],
+  "success_rate": {
+    "backend": "100% (22/22 executed, 1 informational skip)",
+    "frontend": "100% (12/12 admin flow steps + all package/blog/SEO flows)"
+  },
+  "test_credentials": "admin@babatour.com / BabaTour2026! — read from /app/memory/test_credentials.md and verified working.",
+  "seed_data_creation": "Tests created TEST_-prefixed inquiries and one blog post 'TEST_E2E Blog UI'. All cleaned up via DELETE endpoints. Final DB state: 1 seeded inquiry (existing) preserved, 1 seeded blog post 'tips-persiapan-umroh-pertama-kali-untuk-jamaah-indonesia' preserved.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend tests live at /app/backend/tests/test_auth_admin_blog.py — reuse as regression. The frontend restart is required after any public/index.html change because CRA's html-webpack-plugin caches the template. Brute-force lockout + httpOnly cookie auth are NOT yet implemented (per playbook). Seeded blog slug is 'tips-persiapan-umroh-pertama-kali-untuk-jamaah-indonesia'.",
+  "playbook_compliance": {
+    "bcrypt_hash_format": "Not directly inspected, but login works — assumed correct (PyJWT + bcrypt per agent note).",
+    "httpOnly_cookies": "NOT IMPLEMENTED — uses localStorage token (baba_token). Playbook requires httpOnly cookies.",
+    "cors_allow_credentials": "Not retested (existing config from iteration 1).",
+    "brute_force_lockout": "NOT IMPLEMENTED — no lockout after failed attempts.",
+    "seed_admin_idempotent": "Login works after restart, but did not verify password-rotation path."
+  },
+  "rca_of_the_issue": "SEO tags not initially rendered → CRA's html-webpack-plugin only re-reads public/index.html on full webpack restart, not on file watcher events. Fix: sudo supervisorctl restart frontend after editing public/index.html. Verified working after restart."
+}

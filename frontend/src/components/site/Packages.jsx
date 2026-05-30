@@ -1,4 +1,5 @@
-import { Check, MapPin, Plane, Calendar, Sparkles } from "lucide-react";
+import { Check, MapPin, Plane, Calendar, Sparkles, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { PACKAGES } from "../../data/content";
 
 export const Packages = () => {
@@ -87,13 +88,13 @@ export const Packages = () => {
                 </ul>
 
                 <div className="mt-8 flex items-center gap-3">
-                  <a
-                    href="#contact"
-                    data-testid={`package-${p.id}-cta`}
-                    className="bg-primary text-white hover:bg-primary/90 transition rounded-full px-6 py-3 text-sm font-medium flex-1 text-center"
+                  <Link
+                    to={`/packages/${p.id}`}
+                    data-testid={`package-${p.id}-detail`}
+                    className="bg-primary text-white hover:bg-primary/90 transition rounded-full px-6 py-3 text-sm font-medium flex-1 text-center inline-flex items-center justify-center gap-2"
                   >
-                    Daftar Paket
-                  </a>
+                    Lihat Detail <ArrowRight className="w-4 h-4" />
+                  </Link>
                   <a
                     href={`https://wa.me/6282392156538?text=Halo%20Baba%20Tour,%20saya%20tertarik%20dengan%20paket%20${encodeURIComponent(p.name)}`}
                     target="_blank"
@@ -101,7 +102,7 @@ export const Packages = () => {
                     data-testid={`package-${p.id}-wa`}
                     className="border border-soft text-primary hover:bg-surface transition rounded-full px-6 py-3 text-sm font-medium"
                   >
-                    Tanya Detail
+                    Tanya
                   </a>
                 </div>
               </div>

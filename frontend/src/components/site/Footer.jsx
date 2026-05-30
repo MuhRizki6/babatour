@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
 import { BRAND, NAV_LINKS } from "../../data/content";
 
 export const Footer = () => {
@@ -50,7 +51,7 @@ export const Footer = () => {
               {NAV_LINKS.map((l) => (
                 <li key={l.id}>
                   <a
-                    href={`#${l.id}`}
+                    href={`/#${l.id}`}
                     data-testid={`footer-nav-${l.id}-link`}
                     className="text-white/75 hover:text-accent transition text-sm"
                   >
@@ -58,6 +59,11 @@ export const Footer = () => {
                   </a>
                 </li>
               ))}
+              <li>
+                <Link to="/blog" data-testid="footer-nav-blog-link" className="text-white/75 hover:text-accent transition text-sm">
+                  Blog
+                </Link>
+              </li>
             </ul>
           </div>
 
