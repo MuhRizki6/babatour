@@ -22,6 +22,7 @@ import AdminInquiries from "@/pages/AdminInquiries";
 import AdminBlog from "@/pages/AdminBlog";
 import AdminBlogEditor from "@/pages/AdminBlogEditor";
 import PackageDetail from "@/pages/PackageDetail";
+import PackagePrint from "@/pages/PackagePrint";
 import BlogList from "@/pages/BlogList";
 import BlogDetail from "@/pages/BlogDetail";
 
@@ -52,6 +53,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/packages/:id" element={<PackageDetail />} />
+            <Route path="/print/packages/:id" element={<PackagePrint />} />
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
 
