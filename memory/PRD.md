@@ -39,8 +39,18 @@ Indonesian Muslim families/individuals (mostly mobile) researching umrah/hajj pa
 - ✅ Footer (links, contact, FB/IG)
 - ✅ Floating WhatsApp pulsing button
 - ✅ Mobile responsive with hamburger menu
-- ✅ Backend pytest suite (all 7 tests pass)
-- ✅ End-to-end tested via testing_agent_v3 (100% backend, 95% frontend)
+
+## Iteration 2 (2025-12)
+- ✅ JWT-based admin auth (`/api/auth/login`, `/api/auth/me`) with bcrypt + 7-day token, seeded admin from env (idempotent)
+- ✅ Admin dashboard at `/admin` — stats cards + inquiries CRUD (status: new/contacted/converted/closed) + delete with AlertDialog
+- ✅ Admin blog CRUD at `/admin/blog` + `/admin/blog/new` + `/admin/blog/:id/edit` (title, slug, excerpt, content markdown, cover image, publish toggle)
+- ✅ Package detail pages `/packages/:id` with day-by-day itinerary, highlights, includes/excludes, sticky CTA card (4 packages each with custom itinerary)
+- ✅ Public blog at `/blog` and `/blog/:slug` with markdown rendering
+- ✅ Homepage BlogTeaser section (3 latest posts)
+- ✅ SEO meta tags (OG, Twitter card), Schema.org TravelAgency JSON-LD, inline SVG favicon
+- ✅ ProtectedRoute redirects unauthenticated /admin → /admin/login
+- ✅ Cross-page navigation with Header handling /# anchor scrolls
+- ✅ End-to-end tested: 100% backend (22/22), 100% frontend admin + public flows
 
 ## Endpoints
 - GET /api/ — health
