@@ -1,0 +1,151 @@
+{
+  "theme": "LIGHT",
+  "archetype": "Organic & Earthy mixed with Luxury (Archetype 1 + 5)",
+  "brand": {
+    "name": "Baba Tour Umroh & Haji Khusus",
+    "tagline": "Sahabat Perjalanan Umroh Anda",
+    "phone": "+62 823 9215 6538",
+    "email": "babatour.batam@gmail.com",
+    "address": "Ruko Mega Legenda 2 Blok B2 No 26, Batam",
+    "socials": {
+      "facebook": "https://www.facebook.com/people/BabatourBatam/61572145778044/",
+      "instagram": "https://www.instagram.com/babatour.batam/"
+    }
+  },
+  "colors": {
+    "background": "#FDFBF7",
+    "surface": "#F4F1EA",
+    "primary": "#0A3B24",
+    "primary_foreground": "#FFFFFF",
+    "accent": "#C49A45",
+    "accent_foreground": "#FFFFFF",
+    "text_main": "#1A1C19",
+    "text_muted": "#5C605A",
+    "border": "#E5E0D5"
+  },
+  "typography": {
+    "fonts": {
+      "heading": "Cormorant Garamond, serif",
+      "body": "Outfit, sans-serif"
+    },
+    "hierarchy": {
+      "h1": "text-5xl sm:text-6xl tracking-tight font-medium text-primary",
+      "h2": "text-3xl sm:text-4xl tracking-tight font-medium text-primary",
+      "h3": "text-xl sm:text-2xl font-medium text-primary",
+      "body": "text-base leading-relaxed text-text_muted",
+      "overline": "text-sm uppercase tracking-[0.2em] font-semibold text-accent"
+    }
+  },
+  "layout_and_spacing": {
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "section_padding": "py-24 md:py-32",
+    "card_padding": "p-8 md:p-12",
+    "border_radius": "rounded-2xl"
+  },
+  "components": {
+    "header": "Crystal Glassmorphism: backdrop-blur-xl bg-background/80 border-b border-border/50. Must be sticky at top.",
+    "buttons": {
+      "primary": "bg-primary text-white hover:bg-primary/90 transition-colors rounded-full px-8 py-4 font-medium",
+      "accent": "bg-accent text-white hover:bg-accent/90 transition-colors rounded-full px-8 py-4 font-medium",
+      "outline": "border border-border text-primary hover:bg-surface transition-colors rounded-full px-8 py-4 font-medium"
+    },
+    "cards": "bg-surface border border-border/50 hover:-translate-y-1 transition-transform duration-300",
+    "forms": "Use Shadcn UI (Input, Textarea, Button). Labels must be visible. Add data-testid to all inputs and submit."
+  },
+  "sections": [
+    {
+      "name": "Header",
+      "guidelines": "Logo left, Nav links center (desktop), CTA (WhatsApp) right. Hide nav behind hamburger on mobile."
+    },
+    {
+      "name": "Hero",
+      "guidelines": "Full-bleed or large rounded inset image of Kaaba. Overline: 'Biro Perjalanan Umroh Terdaftar Resmi'. H1: Brand Name. Tagline below. 2 CTAs: 'Daftar Sekarang' (Primary) and 'Konsultasi' (Outline). Use image overlay bg-black/30."
+    },
+    {
+      "name": "About",
+      "guidelines": "2-column layout. Left: Staggered elegant images. Right: Text explaining the mission and SK Kemenag registration. Subtle trust logos (Kemenag, ASITA) below in a muted, slow marquee or grid."
+    },
+    {
+      "name": "Packages",
+      "guidelines": "Display Umrah & Hajj packages. Use large, spacious cards. Include price (e.g., 'Mulai Rp 25.000.000'), duration, hotel rating, and 'Termasuk' (Inclusions) checklist."
+    },
+    {
+      "name": "Why Choose Us",
+      "guidelines": "Bento Grid (Control Room style or Tetris grid). 8 points: Trusted, Best Mentors, Quality Hotels, Official, On-time, Comfort, Professional, Exclusive. Use lucide-react icons. Minimal text, high visual impact."
+    },
+    {
+      "name": "Gallery",
+      "guidelines": "Masonry grid of pilgrim moments. Slight hover zoom on images."
+    },
+    {
+      "name": "Testimonials",
+      "guidelines": "Horizontal scroll or 3-column grid. Serene design. Quote icon in accent color. Include pilgrim name and package."
+    },
+    {
+      "name": "FAQ",
+      "guidelines": "Shadcn Accordion. Center-aligned section header. Max-w-3xl for the accordion container for readability."
+    },
+    {
+      "name": "Contact Form",
+      "guidelines": "Split section: Left side contact details (address, phone, email) with earthy background card. Right side functional inquiry form (FastAPI + MongoDB). Fields: Name, Email, Phone, Package Interest, Message. Submit button 'Kirim Pesan'."
+    },
+    {
+      "name": "Footer",
+      "guidelines": "Dark background (bg-primary, text-white/80). Big typography for 'Baba Tour'. Columns for Links, Contact, and Socials. Massive padding py-20."
+    }
+  ],
+  "media": {
+    "hero_background": {
+      "url": "https://images.pexels.com/photos/34498854/pexels-photo-34498854.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Kaaba Mecca Pilgrims"
+    },
+    "about_image_1": {
+      "url": "https://images.unsplash.com/photo-1592326871020-04f58c1a52f3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwxfHxrYWFiYSUyMG1lY2NhfGVufDB8fHx8MTc4MDE4MjY2NHww&ixlib=rb-4.1.0&q=85",
+      "alt": "Mecca daytime"
+    },
+    "about_image_2": {
+      "url": "https://images.pexels.com/photos/18360295/pexels-photo-18360295.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Prophet Mosque Medina"
+    },
+    "packages": {
+      "umrah": {
+        "url": "https://images.unsplash.com/photo-1704104501136-8f35402af395?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHw0fHxrYWFiYSUyMG1lY2NhfGVufDB8fHx8MTc4MDE4MjY2NHww&ixlib=rb-4.1.0&q=85",
+        "alt": "Umrah Package Kaaba"
+      },
+      "hajj": {
+        "url": "https://images.pexels.com/photos/29102893/pexels-photo-29102893.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "alt": "Hajj Package Golden Door"
+      }
+    },
+    "gallery": [
+      {
+        "url": "https://images.pexels.com/photos/8059446/pexels-photo-8059446.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "alt": "Pilgrim praying"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1646228626691-862369e6a787?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxtdXNsaW0lMjBwaWxncmltJTIwcHJheWluZ3xlbnwwfHx8fDE3ODAxODI2NjR8MA&ixlib=rb-4.1.0&q=85",
+        "alt": "Muslim man near building"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1575751639353-e292e76daca3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHw0fHxtdXNsaW0lMjBwaWxncmltJTIwcHJheWluZ3xlbnwwfHx8fDE3ODAxODI2NjR8MA&ixlib=rb-4.1.0&q=85",
+        "alt": "People praying"
+      },
+      {
+        "url": "https://images.pexels.com/photos/33169789/pexels-photo-33169789.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "alt": "Al-Masjid an-Nabawi"
+      }
+    ]
+  },
+  "testing": {
+    "data_testid_rules": "All interactive elements (buttons, links, form inputs) MUST have a data-testid attribute formatted as kebab-case, representing role (e.g., hero-daftar-button, contact-submit-button, nav-about-link)."
+  },
+  "instructions_to_main_agent": [
+    "Strictly use the defined fonts: Cormorant Garamond for headings and Outfit for body. Include them from Google Fonts in index.html.",
+    "Do NOT use raw Shadcn Card components for marketing sections. Use custom div structures with Tailwind classes defined in layout_and_spacing for bento grids.",
+    "Form must be fully functional. The backend should be FastAPI exposing a POST endpoint for inquiries, saving data to MongoDB.",
+    "Implement smooth scrolling (Lenis is recommended, or scroll-behavior: smooth).",
+    "Include a fixed Floating WhatsApp button at bottom right (z-50) linking to wa.me with the provided number.",
+    "Ensure the hero background uses the media.hero_background.url with a max overlay of bg-black/30 so the image remains breathtakingly clear.",
+    "Use lucide-react for all icons."
+  ]
+}
