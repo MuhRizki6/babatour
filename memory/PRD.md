@@ -40,7 +40,13 @@ Indonesian Muslim families/individuals (mostly mobile) researching umrah/hajj pa
 - ✅ Floating WhatsApp pulsing button
 - ✅ Mobile responsive with hamburger menu
 
-## Iteration 2 (2025-12)
+## Iteration 3 (2025-12) — Hadiyya-style Package Detail + PDF/Print
+- ✅ Redesigned `/packages/:id` to match hadiyyaumrah.com style: hero with availability, quick-info bar (tipe/durasi/maskapai/keberangkatan), full description with route bullets, Bonus cards with images, Pembimbing card, Includes/Excludes side-by-side, Highlights pills, numbered Terms, day-by-day itinerary cards with date + meals + activities, Hotel cards (rating + check-in/out + description), Flight cards with airline logos + airport codes + times, Transport logos, sticky pricing CTA with WA/Print/Share buttons
+- ✅ New `/print/packages/:id` route (PackagePrint.jsx) — A4-sized print pages with @page rules, summary table, flight table, hotel table, includes/excludes, day-by-day itinerary table, terms, contact info. "Download PDF / Print" button triggers `window.print()` for native browser PDF save.
+- ✅ Expanded packageDetails.js: 4 packages, each with 9-26 day itineraries, multiple hotels, multi-leg flights, bonuses with images
+- ✅ Tested: 100% (60/60 frontend assertions)
+
+## Iteration 2 (2025-12) — Admin, Blog, Package Details
 - ✅ JWT-based admin auth (`/api/auth/login`, `/api/auth/me`) with bcrypt + 7-day token, seeded admin from env (idempotent)
 - ✅ Admin dashboard at `/admin` — stats cards + inquiries CRUD (status: new/contacted/converted/closed) + delete with AlertDialog
 - ✅ Admin blog CRUD at `/admin/blog` + `/admin/blog/new` + `/admin/blog/:id/edit` (title, slug, excerpt, content markdown, cover image, publish toggle)
