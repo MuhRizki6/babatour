@@ -40,6 +40,15 @@ Indonesian Muslim families/individuals (mostly mobile) researching umrah/hajj pa
 - ✅ Floating WhatsApp pulsing button
 - ✅ Mobile responsive with hamburger menu
 
+## Iteration 6 (2025-12) — Direct Image Upload
+- ✅ **POST /api/admin/upload** endpoint — multipart upload, JWT-protected, returns `{url, filename, size}`
+- ✅ Validation: 6 allowed extensions (jpg/jpeg/png/webp/gif/avif), 10 MB max size
+- ✅ Storage at `/app/backend/uploads/`, served via `/api/uploads/{filename}` (StaticFiles mount)
+- ✅ **UploadButton component** — reusable, shows loader state, prepends `REACT_APP_BACKEND_URL` so stored URLs are absolute
+- ✅ Wired into all three admin editors: Album (album-upload-btn), Package hero + gallery (pkg-hero-upload, pkg-gallery-upload), Blog cover (blog-cover-upload)
+- ✅ Tested: 100% (10/10 backend + visual frontend confirmation)
+- ⚠️ Storage is container-local disk (ephemeral across re-deploys). For production, swap to S3/Cloudinary by changing the upload endpoint only.
+
 ## Iteration 5 (2025-12) — Gallery Albums with Popup Lightbox
 - ✅ **Album system** — full MongoDB CRUD (`/api/admin/albums` + public `/api/albums/public[/{slug}]`)
 - ✅ **Homepage Gallery** now shows 4 album cards (cover + photo count + event date) with **"Lihat Galeri Lengkap"** link to /gallery
