@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Newspaper, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Newspaper, LogOut, ExternalLink, Package, Mail } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function AdminLayout() {
@@ -29,7 +29,18 @@ export default function AdminLayout() {
               }`
             }
           >
-            <LayoutDashboard className="w-4 h-4" /> Dashboard
+            <LayoutDashboard className="w-4 h-4" /> Inquiries
+          </NavLink>
+          <NavLink
+            to="/admin/packages"
+            data-testid="admin-nav-packages"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition ${
+                isActive ? "bg-white/10 text-white" : "text-white/70 hover:bg-white/5"
+              }`
+            }
+          >
+            <Package className="w-4 h-4" /> Packages
           </NavLink>
           <NavLink
             to="/admin/blog"
@@ -41,6 +52,17 @@ export default function AdminLayout() {
             }
           >
             <Newspaper className="w-4 h-4" /> Articles
+          </NavLink>
+          <NavLink
+            to="/admin/newsletter"
+            data-testid="admin-nav-newsletter"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition ${
+                isActive ? "bg-white/10 text-white" : "text-white/70 hover:bg-white/5"
+              }`
+            }
+          >
+            <Mail className="w-4 h-4" /> Newsletter
           </NavLink>
         </nav>
 
@@ -82,11 +104,17 @@ export default function AdminLayout() {
 
       {/* Mobile bottom nav */}
       <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-primary text-white border-t border-white/10 flex z-40">
-        <NavLink to="/admin" end className={({ isActive }) => `flex-1 py-4 text-center text-xs ${isActive ? "text-accent" : "text-white/70"}`}>
+        <NavLink to="/admin" end className={({ isActive }) => `flex-1 py-3 text-center text-[11px] ${isActive ? "text-accent" : "text-white/70"}`}>
           <LayoutDashboard className="w-5 h-5 mx-auto mb-1" /> Inquiries
         </NavLink>
-        <NavLink to="/admin/blog" className={({ isActive }) => `flex-1 py-4 text-center text-xs ${isActive ? "text-accent" : "text-white/70"}`}>
+        <NavLink to="/admin/packages" className={({ isActive }) => `flex-1 py-3 text-center text-[11px] ${isActive ? "text-accent" : "text-white/70"}`}>
+          <Package className="w-5 h-5 mx-auto mb-1" /> Packages
+        </NavLink>
+        <NavLink to="/admin/blog" className={({ isActive }) => `flex-1 py-3 text-center text-[11px] ${isActive ? "text-accent" : "text-white/70"}`}>
           <Newspaper className="w-5 h-5 mx-auto mb-1" /> Articles
+        </NavLink>
+        <NavLink to="/admin/newsletter" className={({ isActive }) => `flex-1 py-3 text-center text-[11px] ${isActive ? "text-accent" : "text-white/70"}`}>
+          <Mail className="w-5 h-5 mx-auto mb-1" /> Subs
         </NavLink>
       </nav>
 

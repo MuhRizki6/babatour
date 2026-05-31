@@ -1,0 +1,45 @@
+{
+  "summary": "Iteration 4 — full backend (25 pytest tests) + frontend E2E testing. Backend: Packages CRUD + Mongo seed + WeasyPrint PDF + Newsletter (subscribe/list/export/delete) + Stats. Found and FIXED 1 backend bug: GET /api/packages/haji-khusus/pdf returned 500 because Content-Disposition header contained em-dash (U+2014) from fullTitle which is not latin-1 encodable. Sanitized filename to ASCII in /app/backend/server.py — all 4 packages now serve PDFs. Frontend: homepage packages-section renders 4 cards via API, newsletter-section form submits and shows success state, /packages/umrah-economy renders gallery-carousel (5 imgs, prev/next, thumbs), both print-itinerary-btn and detail-pdf-btn link to ${BACKEND}/api/packages/{id}/pdf. Admin: 4 sidebar nav items, admin-packages-page list, admin-pkg-editor loads existing package with pkg-published-switch, /admin/newsletter shows export-csv-btn. Old /print/packages/:id route REMOVED (react-router warns 'No routes matched'). 25/25 backend tests pass after fix; ~95%+ of frontend assertions pass.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/packages/{id}/pdf", "issue": "FIXED — non-ASCII chars (em-dash) in fullTitle broke Content-Disposition. Sanitized to ASCII."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/admin/login", "issues": ["When already authenticated and going directly to /admin/packages in a fresh tab without prior session, page redirects to /admin/login (expected behavior, just noting). Token appears to be persisted in localStorage and works on same-tab navigation."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter4.py",
+    "/app/test_reports/pytest/iteration_4_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Add data-testid='admin-package-row-{id}' or 'admin-pkg-new-btn' to admin packages list rows / new button for easier future automated testing — currently we relied on href-based selectors which work but are less explicit.",
+    "(Optional) export-csv-btn renders as a <button> instead of an <a href>; it triggers download via fetch+blob (works) but href attribute is null — fine functionally."
+  ],
+  "critical_code_review_comments": [
+    "server.py has grown to ~568 lines covering auth/inquiries/blog/packages/PDF/newsletter — still under 700-line guideline but consider splitting into routers (auth.py, packages.py, newsletter.py, blog.py) before next iteration to keep DRY.",
+    "PDF filename sanitisation should be applied for ANY Content-Disposition header (e.g., CSV export uses static name so OK). Suggest a tiny helper `_safe_filename(name)` in pdf_render or utils.",
+    "Newsletter POST returns 200 for already-subscribed instead of 200/409 — spec explicitly mandates idempotent 200 with alreadySubscribed=true which is correctly implemented. Good.",
+    "All endpoints use Pydantic models with EmailStr; 422 validation working as expected.",
+    "Public package GET correctly filters published=true; admin GET returns all incl drafts. Good separation.",
+    "MongoDB _id correctly excluded everywhere via projection {'_id': 0}.",
+    "WeasyPrint generates ~36KB+ PDFs for full packages and ~5–30KB for sparser ones — quality OK.",
+    "Frontend GalleryCarousel correctly handles prev/next/thumbnails/lightbox (5 images including hero on umrah-economy)."
+  ],
+  "updated_files": [
+    "/app/backend/server.py (ASCII sanitisation of PDF Content-Disposition filename)",
+    "/app/backend/tests/test_iter4.py (new — 25 tests)"
+  ],
+  "success_rate": {"backend": "100% (25/25 after fix)", "frontend": "~95% (all critical flows verified)"},
+  "test_credentials": "admin@babatour.com / BabaTour2026! (works)",
+  "seed_data_creation": "Backend test created one temporary package (TEST_pkg_*) which was deleted in same test, and one newsletter subscriber (test_*@example.com) which was also deleted. No residual TEST_* data.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Public URL: https://umrah-landing.preview.emergentagent.com. Backend test suite at /app/backend/tests/test_iter4.py (25 tests, all pass). Admin login admin@babatour.com / BabaTour2026!. Seeded packages: umrah-economy, umrah-vip, umrah-plus, haji-khusus. Bug fixed this iter: PDF filename header now ASCII-only. Old /print/packages/:id route fully removed — confirmed by react-router warning. Use data-testid='gallery-carousel', 'print-itinerary-btn', 'detail-pdf-btn', 'newsletter-section', 'packages-section', 'admin-packages-page', 'admin-pkg-editor', 'pkg-published-switch', 'export-csv-btn', 'admin-nav-{inquiries|packages|blog|newsletter}'. Carryover (still NOT implemented from previous iters): httpOnly cookies, brute-force lockout — JWT in localStorage is current auth model.",
+  "rca of the issue": "haji-khusus.fullTitle contained an em-dash '—' (U+2014). server.py built Content-Disposition: inline; filename=\"Itinerary_<name>.pdf\". Starlette encodes HTTP headers as latin-1 which cannot represent U+2014, raising UnicodeEncodeError → 500. Fix: encode filename to ASCII with errors='ignore' before embedding. Reproduction: curl -i $URL/api/packages/haji-khusus/pdf → 500 before fix, 200 application/pdf after fix. Mitigation: filename sanitisation applied at /app/backend/server.py:454-457."
+}

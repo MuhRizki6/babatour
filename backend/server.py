@@ -312,12 +312,201 @@ async def admin_stats(current=Depends(get_current_admin)):
     new_inq = await db.inquiries.count_documents({"status": "new"})
     converted = await db.inquiries.count_documents({"status": "converted"})
     posts = await db.blog_posts.count_documents({})
+    pkgs = await db.packages.count_documents({})
+    subs = await db.newsletter.count_documents({})
     return {
         "total_inquiries": total_inq,
         "new_inquiries": new_inq,
         "converted": converted,
         "blog_posts": posts,
+        "packages": pkgs,
+        "subscribers": subs,
     }
+
+
+# ========== Packages ==========
+class PackageIn(BaseModel):
+    id: Optional[str] = None
+    name: str
+    fullTitle: str
+    subtitle: Optional[str] = ""
+    headline: Optional[str] = ""
+    badge: Optional[str] = ""
+    badgeLong: Optional[str] = ""
+    duration: Optional[str] = ""
+    durasi: Optional[str] = ""
+    tipePaket: Optional[str] = "Umroh"
+    departures: Optional[str] = ""
+    departureDate: Optional[str] = ""
+    returnDate: Optional[str] = ""
+    departureCity: Optional[str] = ""
+    availableSeats: Optional[int] = 0
+    priceFrom: Optional[str] = ""
+    airline: Optional[str] = ""
+    hotelMakkah: Optional[str] = ""
+    hotelMadinah: Optional[str] = ""
+    image: Optional[str] = ""
+    gallery: List[str] = Field(default_factory=list)
+    overview: Optional[str] = ""
+    routes: List[str] = Field(default_factory=list)
+    bonuses: List[dict] = Field(default_factory=list)
+    pembimbing: Optional[str] = ""
+    highlights: List[str] = Field(default_factory=list)
+    includes: List[str] = Field(default_factory=list)
+    excludes: List[str] = Field(default_factory=list)
+    terms: List[str] = Field(default_factory=list)
+    hotels: List[dict] = Field(default_factory=list)
+    flights: List[dict] = Field(default_factory=list)
+    transports: List[dict] = Field(default_factory=list)
+    itinerary: List[dict] = Field(default_factory=list)
+    published: bool = True
+    order: int = 99
+
+
+def _pkg_clean(doc: dict) -> dict:
+    if not doc:
+        return doc
+    doc = {k: v for k, v in doc.items() if k != "_id"}
+    return doc
+
+
+@api_router.get("/packages/public")
+async def public_packages():
+    items = await db.packages.find({"published": True}, {"_id": 0}).sort("order", 1).to_list(200)
+    return items
+
+
+@api_router.get("/packages/public/{pkg_id}")
+async def public_package(pkg_id: str):
+    doc = await db.packages.find_one({"id": pkg_id, "published": True}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Package not found")
+    return doc
+
+
+@api_router.get("/admin/packages")
+async def admin_list_packages(current=Depends(get_current_admin)):
+    items = await db.packages.find({}, {"_id": 0}).sort("order", 1).to_list(500)
+    return items
+
+
+@api_router.get("/admin/packages/{pkg_id}")
+async def admin_get_package(pkg_id: str, current=Depends(get_current_admin)):
+    doc = await db.packages.find_one({"id": pkg_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Package not found")
+    return doc
+
+
+@api_router.post("/admin/packages")
+async def admin_create_package(payload: PackageIn, current=Depends(get_current_admin)):
+    pid = (payload.id or slugify(payload.name) or uuid.uuid4().hex[:8])
+    if await db.packages.find_one({"id": pid}):
+        raise HTTPException(400, f"Package id '{pid}' already exists")
+    data = payload.model_dump()
+    data["id"] = pid
+    data["created_at"] = datetime.now(timezone.utc).isoformat()
+    data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.packages.insert_one(data)
+    return {k: v for k, v in data.items() if k != "_id"}
+
+
+@api_router.patch("/admin/packages/{pkg_id}")
+async def admin_update_package(pkg_id: str, payload: PackageIn, current=Depends(get_current_admin)):
+    existing = await db.packages.find_one({"id": pkg_id})
+    if not existing:
+        raise HTTPException(404, "Package not found")
+    update = payload.model_dump()
+    update["id"] = pkg_id  # don't allow id change here
+    update["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.packages.update_one({"id": pkg_id}, {"$set": update})
+    doc = await db.packages.find_one({"id": pkg_id}, {"_id": 0})
+    return doc
+
+
+@api_router.delete("/admin/packages/{pkg_id}")
+async def admin_delete_package(pkg_id: str, current=Depends(get_current_admin)):
+    res = await db.packages.delete_one({"id": pkg_id})
+    if res.deleted_count == 0:
+        raise HTTPException(404, "Not found")
+    return {"ok": True}
+
+
+# ========== PDF download ==========
+from fastapi.responses import Response
+
+BRAND = {
+    "name": "Baba Tour",
+    "fullName": "Baba Tour Umroh & Haji Khusus",
+    "phone": "+62 823 9215 6538",
+    "email": "babatour.batam@gmail.com",
+    "address": "Ruko Mega Legenda 2 Blok B2 No 26, Batam",
+}
+
+
+@api_router.get("/packages/{pkg_id}/pdf")
+async def package_pdf(pkg_id: str):
+    doc = await db.packages.find_one({"id": pkg_id, "published": True}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Package not found")
+    from pdf_render import render_package_pdf
+    pdf_bytes = render_package_pdf(doc, BRAND)
+    raw_name = (doc.get("fullTitle") or pkg_id).replace(" ", "_").replace("[", "").replace("]", "")
+    # Content-Disposition must be latin-1 safe; strip non-ASCII (e.g., em-dash)
+    safe_name = raw_name.encode("ascii", "ignore").decode("ascii") or pkg_id
+    headers = {"Content-Disposition": f'inline; filename="Itinerary_{safe_name}.pdf"'}
+    return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
+
+
+# ========== Newsletter ==========
+class NewsletterIn(BaseModel):
+    email: EmailStr
+    name: Optional[str] = None
+
+
+@api_router.post("/newsletter")
+async def subscribe_newsletter(payload: NewsletterIn):
+    email = payload.email.lower()
+    existing = await db.newsletter.find_one({"email": email})
+    if existing:
+        return {"ok": True, "message": "Already subscribed", "alreadySubscribed": True}
+    doc = {
+        "id": str(uuid.uuid4()),
+        "email": email,
+        "name": (payload.name or "").strip() or None,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.newsletter.insert_one(doc)
+    return {"ok": True, "message": "Subscribed", "alreadySubscribed": False}
+
+
+@api_router.get("/admin/newsletter")
+async def admin_list_subs(current=Depends(get_current_admin)):
+    items = await db.newsletter.find({}, {"_id": 0}).sort("created_at", -1).to_list(2000)
+    return items
+
+
+@api_router.delete("/admin/newsletter/{sub_id}")
+async def admin_delete_sub(sub_id: str, current=Depends(get_current_admin)):
+    res = await db.newsletter.delete_one({"id": sub_id})
+    if res.deleted_count == 0:
+        raise HTTPException(404, "Not found")
+    return {"ok": True}
+
+
+@api_router.get("/admin/newsletter/export")
+async def admin_export_subs(current=Depends(get_current_admin)):
+    items = await db.newsletter.find({}, {"_id": 0}).sort("created_at", -1).to_list(10000)
+    lines = ["email,name,created_at"]
+    for it in items:
+        name = (it.get("name") or "").replace(",", " ").replace('"', "'")
+        lines.append(f'{it.get("email","")},{name},{it.get("created_at","")}')
+    csv = "\n".join(lines)
+    return Response(
+        content=csv,
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="newsletter_subscribers.csv"'},
+    )
 
 
 # ---------- Startup ----------
@@ -340,6 +529,17 @@ async def seed_admin():
         logger.info(f"Updated admin password: {email}")
 
 
+async def seed_packages():
+    from seed_packages import SEED_PACKAGES
+    for p in SEED_PACKAGES:
+        existing = await db.packages.find_one({"id": p["id"]})
+        if not existing:
+            doc = {**p, "created_at": datetime.now(timezone.utc).isoformat(),
+                   "updated_at": datetime.now(timezone.utc).isoformat()}
+            await db.packages.insert_one(doc)
+            logger.info(f"Seeded package: {p['id']}")
+
+
 @app.on_event("startup")
 async def on_startup():
     await db.users.create_index("email", unique=True)
@@ -347,7 +547,10 @@ async def on_startup():
     await db.blog_posts.create_index("slug", unique=True)
     await db.blog_posts.create_index("id", unique=True)
     await db.inquiries.create_index("id", unique=True)
+    await db.packages.create_index("id", unique=True)
+    await db.newsletter.create_index("email", unique=True)
     await seed_admin()
+    await seed_packages()
 
 
 @app.on_event("shutdown")

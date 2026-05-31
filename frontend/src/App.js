@@ -15,14 +15,17 @@ import { Contact } from "@/components/site/Contact";
 import { Footer } from "@/components/site/Footer";
 import { FloatingWhatsApp } from "@/components/site/FloatingWhatsApp";
 import { BlogTeaser } from "@/components/site/BlogTeaser";
+import { Newsletter } from "@/components/site/Newsletter";
 
 import AdminLogin from "@/pages/AdminLogin";
 import AdminLayout from "@/pages/AdminLayout";
 import AdminInquiries from "@/pages/AdminInquiries";
 import AdminBlog from "@/pages/AdminBlog";
 import AdminBlogEditor from "@/pages/AdminBlogEditor";
+import AdminPackages from "@/pages/AdminPackages";
+import AdminPackageEditor from "@/pages/AdminPackageEditor";
+import AdminNewsletter from "@/pages/AdminNewsletter";
 import PackageDetail from "@/pages/PackageDetail";
-import PackagePrint from "@/pages/PackagePrint";
 import BlogList from "@/pages/BlogList";
 import BlogDetail from "@/pages/BlogDetail";
 
@@ -37,6 +40,7 @@ const Landing = () => (
       <Gallery />
       <Testimonials />
       <BlogTeaser />
+      <Newsletter />
       <Faq />
       <Contact />
     </main>
@@ -53,7 +57,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/packages/:id" element={<PackageDetail />} />
-            <Route path="/print/packages/:id" element={<PackagePrint />} />
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
 
@@ -67,9 +70,13 @@ function App() {
               }
             >
               <Route index element={<AdminInquiries />} />
+              <Route path="packages" element={<AdminPackages />} />
+              <Route path="packages/new" element={<AdminPackageEditor />} />
+              <Route path="packages/:id/edit" element={<AdminPackageEditor />} />
               <Route path="blog" element={<AdminBlog />} />
               <Route path="blog/new" element={<AdminBlogEditor />} />
               <Route path="blog/:id/edit" element={<AdminBlogEditor />} />
+              <Route path="newsletter" element={<AdminNewsletter />} />
             </Route>
           </Routes>
           <Toaster richColors position="top-center" />
