@@ -7,6 +7,7 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Switch } from "../components/ui/switch";
+import { UploadButton } from "../components/UploadButton";
 
 const EMPTY = {
   id: "", name: "", fullTitle: "", subtitle: "", headline: "",
@@ -156,9 +157,34 @@ export default function AdminPackageEditor() {
         </Section>
 
         <Section title="Images & Gallery">
-          <Field label="Hero Image URL"><Input value={form.image} onChange={set("image")} /></Field>
+          <Field label="Hero Image URL">
+            <div className="flex gap-2 flex-wrap">
+              <Input value={form.image} onChange={set("image")} className="flex-1 min-w-[250px]" />
+              <UploadButton testid="pkg-hero-upload" label="Upload" onUploaded={(url) => setForm((f) => ({ ...f, image: url }))} />
+            </div>
+            {form.image && <img src={form.image} alt="" className="mt-3 w-40 h-28 object-cover rounded-lg" />}
+          </Field>
           <Field label="Gallery URLs (one per line)">
-            <Textarea rows={5} value={arrToLines(form.gallery)} onChange={(e) => setForm((f) => ({ ...f, gallery: linesToArr(e.target.value) }))} placeholder="https://...jpg" />
+            <div className="flex gap-2 flex-wrap items-start">
+              <Textarea rows={5} value={arrToLines(form.gallery)} onChange={(e) => setForm((f) => ({ ...f, gallery: linesToArr(e.target.value) }))} placeholder="https://...jpg" className="flex-1 min-w-[300px]" />
+              <UploadButton testid="pkg-gallery-upload" label="Upload to gallery" onUploaded={(url) => setForm((f) => ({ ...f, gallery: [...(f.gallery || []), url] }))} />
+            </div>
+            {(form.gallery || []).length > 0 && (
+              <div className="mt-3 grid grid-cols-3 md:grid-cols-5 gap-2">
+                {form.gallery.map((src, i) => (
+                  <div key={i} className="relative group">
+                    <img src={src} alt="" className="w-full aspect-square object-cover rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, gallery: f.gallery.filter((_, k) => k !== i) }))}
+                      className="absolute top-1 right-1 w-6 h-6 grid place-items-center bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </Field>
         </Section>
 

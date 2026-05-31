@@ -5,7 +5,8 @@ import os
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, status, UploadFile, File
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import logging
@@ -594,6 +595,43 @@ async def admin_delete_album(album_id: str, current=Depends(get_current_admin)):
     return {"ok": True}
 
 
+# ========== Image Upload ==========
+ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"}
+MAX_UPLOAD_MB = 10
+
+
+@api_router.post("/admin/upload")
+async def admin_upload_image(file: UploadFile = File(...), current=Depends(get_current_admin)):
+    # Validate extension
+    name = (file.filename or "").lower()
+    ext = ""
+    if "." in name:
+        ext = "." + name.rsplit(".", 1)[-1]
+    if ext not in ALLOWED_EXT:
+        raise HTTPException(400, f"Unsupported file type. Allowed: {', '.join(sorted(ALLOWED_EXT))}")
+
+    # Read with size limit
+    contents = await file.read()
+    size_mb = len(contents) / (1024 * 1024)
+    if size_mb > MAX_UPLOAD_MB:
+        raise HTTPException(400, f"File too large ({size_mb:.1f} MB). Max {MAX_UPLOAD_MB} MB.")
+
+    # Save with random name
+    new_name = f"{uuid.uuid4().hex}{ext}"
+    target = UPLOAD_DIR / new_name
+    with open(target, "wb") as f:
+        f.write(contents)
+
+    # Build absolute URL
+    base = os.environ.get("PUBLIC_BACKEND_URL", "").rstrip("/")
+    if base:
+        url = f"{base}/api/uploads/{new_name}"
+    else:
+        url = f"/api/uploads/{new_name}"
+
+    return {"url": url, "filename": new_name, "size": len(contents)}
+
+
 # ---------- Startup ----------
 async def seed_admin():
     email = os.environ.get('ADMIN_EMAIL', 'admin@babatour.com').lower()
@@ -707,6 +745,11 @@ async def shutdown_db_client():
 
 
 app.include_router(api_router)
+
+# ---------- Static uploads ----------
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,

@@ -7,6 +7,7 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Switch } from "../components/ui/switch";
+import { UploadButton } from "../components/UploadButton";
 
 export default function AdminBlogEditor() {
   const { id } = useParams();
@@ -115,13 +116,17 @@ export default function AdminBlogEditor() {
           </div>
           <div>
             <Label className="text-xs uppercase tracking-[0.18em] text-muted">Cover Image URL</Label>
-            <Input
-              data-testid="editor-cover"
-              value={form.cover_image}
-              onChange={set("cover_image")}
-              placeholder="https://..."
-              className="mt-2 bg-surface border-soft rounded-xl h-12"
-            />
+            <div className="flex gap-2 flex-wrap mt-2">
+              <Input
+                data-testid="editor-cover"
+                value={form.cover_image}
+                onChange={set("cover_image")}
+                placeholder="https://..."
+                className="bg-surface border-soft rounded-xl h-12 flex-1 min-w-[200px]"
+              />
+              <UploadButton testid="blog-cover-upload" label="Upload" onUploaded={(url) => setForm((f) => ({ ...f, cover_image: url }))} />
+            </div>
+            {form.cover_image && <img src={form.cover_image} alt="" className="mt-3 w-40 h-24 object-cover rounded-lg" />}
           </div>
         </div>
 
