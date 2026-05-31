@@ -8,6 +8,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Switch } from "../components/ui/switch";
 import { UploadButton } from "../components/UploadButton";
+import { UploadDropzone } from "../components/UploadDropzone";
 
 const EMPTY = {
   title: "", slug: "", description: "", cover_image: "",
@@ -105,7 +106,21 @@ export default function AdminAlbumEditor() {
 
         <div>
           <Label className="text-xs uppercase tracking-[0.18em] text-muted">Album Images</Label>
-          <div className="mt-3 flex gap-2 flex-wrap">
+
+          <div className="mt-3">
+            <UploadDropzone
+              multiple
+              label="Drag & drop photos here"
+              onUploaded={(urls) => setForm((f) => ({
+                ...f,
+                images: [...(f.images || []), ...urls],
+                cover_image: f.cover_image || urls[0],
+              }))}
+            />
+          </div>
+
+          <div className="mt-4 text-xs uppercase tracking-[0.18em] text-muted">Or paste image URL</div>
+          <div className="mt-2 flex gap-2 flex-wrap">
             <Input
               value={newImg}
               onChange={(e) => setNewImg(e.target.value)}
@@ -117,13 +132,7 @@ export default function AdminAlbumEditor() {
             <button type="button" onClick={addImage} data-testid="album-add-image-btn" className="bg-primary text-white hover:bg-primary/90 transition rounded-xl px-5 h-12 text-sm font-medium flex items-center gap-2">
               <Plus className="w-4 h-4" /> Add URL
             </button>
-            <UploadButton
-              testid="album-upload-btn"
-              label="Upload"
-              onUploaded={(url) => setForm((f) => ({ ...f, images: [...(f.images || []), url], cover_image: f.cover_image || url }))}
-            />
           </div>
-          <p className="text-xs text-muted mt-2">Tip: Upload langsung dari komputer (JPG/PNG/WebP, max 10MB) atau paste URL.</p>
 
           {form.images.length > 0 && (
             <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
