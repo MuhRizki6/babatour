@@ -45,17 +45,16 @@ def _save_one(file_bytes: bytes, original_name: str) -> dict:
 
     optimized: bytes
     final_ext = ".webp"
-    try:
-        # GIF stays GIF to preserve animation; others → WebP
-        if ext == ".gif":
-            optimized = file_bytes
-            final_ext = ".gif"
-        else:
-            optimized = _optimize_to_webp(file_bytes)
-    except Exception:
-        # Fallback: save original bytes
+    if ext == ".gif":
+        # GIF stays GIF to preserve animation
         optimized = file_bytes
-        final_ext = ext
+        final_ext = ".gif"
+    else:
+        try:
+            optimized = _optimize_to_webp(file_bytes)
+        except Exception as e:
+            # Refuse to save a file we couldn't decode — prevents pseudo-image uploads
+            raise HTTPException(400, f"Could not process image: {e}") from e
 
     new_name = f"{uuid.uuid4().hex}{final_ext}"
     target = UPLOAD_DIR / new_name

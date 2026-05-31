@@ -40,6 +40,14 @@ Indonesian Muslim families/individuals (mostly mobile) researching umrah/hajj pa
 - ✅ Floating WhatsApp pulsing button
 - ✅ Mobile responsive with hamburger menu
 
+## Iteration 7 (2025-12) — Bulk Upload + Image Optimization + Modular Routers
+- ✅ **server.py refactored**: now ~165 lines. Routes split into 7 modules under `/app/backend/routers/`: auth, inquiries, blog, packages, albums, newsletter, uploads. Shared deps (db, auth, slugify, BRAND) in `/app/backend/core/deps.py`.
+- ✅ **Server-side image optimization** (Pillow): every upload (except GIF, which stays animated) is converted to **WebP @ quality 85** and resized to **max 1600px width** with EXIF orientation preserved. Typical 94 KB JPG → ~3 KB WebP (96% size reduction).
+- ✅ **Bulk upload** `POST /api/admin/upload/bulk` — multipart `files[]`, max 20 per batch, returns `{uploaded[], errors[], count}`. Validates extension + size per file independently.
+- ✅ **UploadDropzone** component on `/admin/gallery/new`: drag-and-drop area with progress bar ("Uploading X of Y"), multi-select file picker, posts to bulk endpoint. URL paste input kept as fallback.
+- ✅ Hardened uploads: Pillow decode failure now returns 400 instead of writing pseudo-image bytes to disk
+- ✅ Tested: 100% (22/22 backend regression + new features + frontend dropzone)
+
 ## Iteration 6 (2025-12) — Direct Image Upload
 - ✅ **POST /api/admin/upload** endpoint — multipart upload, JWT-protected, returns `{url, filename, size}`
 - ✅ Validation: 6 allowed extensions (jpg/jpeg/png/webp/gif/avif), 10 MB max size
