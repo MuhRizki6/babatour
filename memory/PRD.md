@@ -40,6 +40,15 @@ Indonesian Muslim families/individuals (mostly mobile) researching umrah/hajj pa
 - ✅ Floating WhatsApp pulsing button
 - ✅ Mobile responsive with hamburger menu
 
+## Iteration 4 (2025-12) — Packages CRUD + Server-side PDF + Gallery + Newsletter
+- ✅ **Packages CRUD**: moved from static file to MongoDB. Admin CRUD at `/admin/packages` with full editor (name, fullTitle, hero image, gallery, itinerary, hotels, flights, transports, bonuses, includes/excludes/highlights/terms, publish toggle). Public endpoint `GET /api/packages/public` and `/api/packages/public/{id}`. Seeded 4 default packages on startup (idempotent).
+- ✅ **Server-side PDF** with WeasyPrint at `GET /api/packages/{id}/pdf` — generates 3-page A4 PDF (cover/summary, day-by-day itinerary table, terms/contact). Replaces frontend window.print(). Consistent output regardless of user's browser.
+- ✅ **Gallery carousel**: per-package `gallery[]` array, prev/next nav, thumbnail strip, click-to-zoom lightbox (`GalleryCarousel.jsx`)
+- ✅ **Newsletter** (collect-only): `POST /api/newsletter` public, `/admin/newsletter` for list/delete/CSV export. Idempotent — duplicate emails return alreadySubscribed=true. New homepage section + admin page.
+- ✅ Admin sidebar now has 4 sections: Inquiries / Packages / Articles / Newsletter
+- ✅ Backend tests: 100% (25/25 in /app/backend/tests/test_iter4.py)
+- ✅ Bug fix: PDF filename sanitised to ASCII (em-dash in haji-khusus title was breaking Content-Disposition header)
+
 ## Iteration 3 (2025-12) — Hadiyya-style Package Detail + PDF/Print
 - ✅ Redesigned `/packages/:id` to match hadiyyaumrah.com style: hero with availability, quick-info bar (tipe/durasi/maskapai/keberangkatan), full description with route bullets, Bonus cards with images, Pembimbing card, Includes/Excludes side-by-side, Highlights pills, numbered Terms, day-by-day itinerary cards with date + meals + activities, Hotel cards (rating + check-in/out + description), Flight cards with airline logos + airport codes + times, Transport logos, sticky pricing CTA with WA/Print/Share buttons
 - ✅ New `/print/packages/:id` route (PackagePrint.jsx) — A4-sized print pages with @page rules, summary table, flight table, hotel table, includes/excludes, day-by-day itinerary table, terms, contact info. "Download PDF / Print" button triggers `window.print()` for native browser PDF save.
