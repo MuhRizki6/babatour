@@ -25,9 +25,12 @@ import AdminBlogEditor from "@/pages/AdminBlogEditor";
 import AdminPackages from "@/pages/AdminPackages";
 import AdminPackageEditor from "@/pages/AdminPackageEditor";
 import AdminNewsletter from "@/pages/AdminNewsletter";
+import AdminGallery from "@/pages/AdminGallery";
+import AdminAlbumEditor from "@/pages/AdminAlbumEditor";
 import PackageDetail from "@/pages/PackageDetail";
 import BlogList from "@/pages/BlogList";
 import BlogDetail from "@/pages/BlogDetail";
+import GalleryPage from "@/pages/GalleryPage";
 
 const Landing = () => (
   <div data-testid="landing-page" className="bg-[color:var(--bg)] text-main overflow-x-hidden">
@@ -59,6 +62,7 @@ function App() {
             <Route path="/packages/:id" element={<PackageDetail />} />
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
+            <Route path="/gallery" element={<GalleryPage />} />
 
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
@@ -76,6 +80,9 @@ function App() {
               <Route path="blog" element={<AdminBlog />} />
               <Route path="blog/new" element={<AdminBlogEditor />} />
               <Route path="blog/:id/edit" element={<AdminBlogEditor />} />
+              <Route path="gallery" element={<AdminGallery />} />
+              <Route path="gallery/new" element={<AdminAlbumEditor />} />
+              <Route path="gallery/:id/edit" element={<AdminAlbumEditor />} />
               <Route path="newsletter" element={<AdminNewsletter />} />
             </Route>
           </Routes>

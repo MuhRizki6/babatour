@@ -509,6 +509,91 @@ async def admin_export_subs(current=Depends(get_current_admin)):
     )
 
 
+# ========== Albums (Gallery) ==========
+class AlbumIn(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    slug: Optional[str] = None
+    description: Optional[str] = ""
+    cover_image: Optional[str] = ""
+    images: List[str] = Field(default_factory=list)
+    event_date: Optional[str] = ""
+    published: bool = True
+    order: int = 99
+
+
+@api_router.get("/albums/public")
+async def public_albums():
+    items = await db.albums.find({"published": True}, {"_id": 0}).sort([("order", 1), ("created_at", -1)]).to_list(200)
+    return items
+
+
+@api_router.get("/albums/public/{slug}")
+async def public_album(slug: str):
+    doc = await db.albums.find_one({"slug": slug, "published": True}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Album not found")
+    return doc
+
+
+@api_router.get("/admin/albums")
+async def admin_list_albums(current=Depends(get_current_admin)):
+    items = await db.albums.find({}, {"_id": 0}).sort([("order", 1), ("created_at", -1)]).to_list(500)
+    return items
+
+
+@api_router.get("/admin/albums/{album_id}")
+async def admin_get_album(album_id: str, current=Depends(get_current_admin)):
+    doc = await db.albums.find_one({"id": album_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Album not found")
+    return doc
+
+
+@api_router.post("/admin/albums")
+async def admin_create_album(payload: AlbumIn, current=Depends(get_current_admin)):
+    slug = slugify(payload.slug or payload.title)
+    base = slug; n = 1
+    while await db.albums.find_one({"slug": slug}):
+        n += 1; slug = f"{base}-{n}"
+    doc = payload.model_dump()
+    doc["id"] = str(uuid.uuid4())
+    doc["slug"] = slug
+    doc["created_at"] = datetime.now(timezone.utc).isoformat()
+    doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    if not doc.get("cover_image") and doc.get("images"):
+        doc["cover_image"] = doc["images"][0]
+    await db.albums.insert_one(doc)
+    return {k: v for k, v in doc.items() if k != "_id"}
+
+
+@api_router.patch("/admin/albums/{album_id}")
+async def admin_update_album(album_id: str, payload: AlbumIn, current=Depends(get_current_admin)):
+    existing = await db.albums.find_one({"id": album_id})
+    if not existing:
+        raise HTTPException(404, "Album not found")
+    new_slug = slugify(payload.slug) if payload.slug else existing["slug"]
+    if new_slug != existing["slug"]:
+        base = new_slug; n = 1
+        while await db.albums.find_one({"slug": new_slug, "id": {"$ne": album_id}}):
+            n += 1; new_slug = f"{base}-{n}"
+    update = payload.model_dump()
+    update["slug"] = new_slug
+    update["updated_at"] = datetime.now(timezone.utc).isoformat()
+    if not update.get("cover_image") and update.get("images"):
+        update["cover_image"] = update["images"][0]
+    await db.albums.update_one({"id": album_id}, {"$set": update})
+    doc = await db.albums.find_one({"id": album_id}, {"_id": 0})
+    return doc
+
+
+@api_router.delete("/admin/albums/{album_id}")
+async def admin_delete_album(album_id: str, current=Depends(get_current_admin)):
+    res = await db.albums.delete_one({"id": album_id})
+    if res.deleted_count == 0:
+        raise HTTPException(404, "Not found")
+    return {"ok": True}
+
+
 # ---------- Startup ----------
 async def seed_admin():
     email = os.environ.get('ADMIN_EMAIL', 'admin@babatour.com').lower()
@@ -540,6 +625,66 @@ async def seed_packages():
             logger.info(f"Seeded package: {p['id']}")
 
 
+async def seed_albums():
+    seed = [
+        {
+            "slug": "umroh-vip-maret-2026",
+            "title": "Umroh VIP Maret 2026",
+            "description": "Dokumentasi keberangkatan jamaah Umroh VIP Maret 2026 di Tanah Suci — momen-momen ibadah dan kebersamaan.",
+            "cover_image": "https://images.pexels.com/photos/8059446/pexels-photo-8059446.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+            "images": [
+                "https://images.pexels.com/photos/8059446/pexels-photo-8059446.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+                "https://images.unsplash.com/photo-1646228626691-862369e6a787?crop=entropy&cs=srgb&fm=jpg&w=1200&q=80",
+                "https://images.unsplash.com/photo-1575751639353-e292e76daca3?crop=entropy&cs=srgb&fm=jpg&w=1200&q=80",
+                "https://images.pexels.com/photos/34498854/pexels-photo-34498854.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+                "https://images.unsplash.com/photo-1592326871020-04f58c1a52f3?crop=entropy&cs=srgb&fm=jpg&w=1200&q=80",
+            ],
+            "event_date": "Maret 2026",
+            "order": 1,
+        },
+        {
+            "slug": "umroh-plus-turki-mei-2026",
+            "title": "Umroh Plus Turki Mei 2026",
+            "description": "Wisata sejarah Islam di Istanbul — Blue Mosque, Hagia Sophia, Topkapi Palace, dan Bosphorus Cruise.",
+            "cover_image": "https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=1200&q=80",
+            "images": [
+                "https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1668020024175-c1bca87c5a9d?auto=format&fit=crop&w=1200&q=80",
+                "https://images.pexels.com/photos/18360295/pexels-photo-18360295.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+                "https://images.unsplash.com/photo-1592326871020-04f58c1a52f3?crop=entropy&cs=srgb&fm=jpg&w=1200&q=80",
+            ],
+            "event_date": "Mei 2026",
+            "order": 2,
+        },
+        {
+            "slug": "haji-khusus-2024",
+            "title": "Haji Khusus 2024",
+            "description": "Momen-momen ibadah Haji Khusus 2024 di Mekkah, Madinah, Arafah, dan Mina.",
+            "cover_image": "https://images.pexels.com/photos/29102893/pexels-photo-29102893.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+            "images": [
+                "https://images.pexels.com/photos/29102893/pexels-photo-29102893.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+                "https://images.pexels.com/photos/33169789/pexels-photo-33169789.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+                "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80",
+                "https://images.pexels.com/photos/34498854/pexels-photo-34498854.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
+            ],
+            "event_date": "Juni 2024",
+            "order": 3,
+        },
+    ]
+    for a in seed:
+        existing = await db.albums.find_one({"slug": a["slug"]})
+        if not existing:
+            doc = {
+                **a,
+                "id": str(uuid.uuid4()),
+                "published": True,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+            await db.albums.insert_one(doc)
+            logger.info(f"Seeded album: {a['slug']}")
+
+
 @app.on_event("startup")
 async def on_startup():
     await db.users.create_index("email", unique=True)
@@ -549,8 +694,11 @@ async def on_startup():
     await db.inquiries.create_index("id", unique=True)
     await db.packages.create_index("id", unique=True)
     await db.newsletter.create_index("email", unique=True)
+    await db.albums.create_index("slug", unique=True)
+    await db.albums.create_index("id", unique=True)
     await seed_admin()
     await seed_packages()
+    await seed_albums()
 
 
 @app.on_event("shutdown")

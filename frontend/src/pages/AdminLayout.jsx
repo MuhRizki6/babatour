@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Newspaper, LogOut, ExternalLink, Package, Mail } from "lucide-react";
+import { LayoutDashboard, Newspaper, LogOut, ExternalLink, Package, Mail, ImageIcon } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function AdminLayout() {
@@ -52,6 +52,17 @@ export default function AdminLayout() {
             }
           >
             <Newspaper className="w-4 h-4" /> Articles
+          </NavLink>
+          <NavLink
+            to="/admin/gallery"
+            data-testid="admin-nav-gallery"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition ${
+                isActive ? "bg-white/10 text-white" : "text-white/70 hover:bg-white/5"
+              }`
+            }
+          >
+            <ImageIcon className="w-4 h-4" /> Gallery
           </NavLink>
           <NavLink
             to="/admin/newsletter"
@@ -112,6 +123,9 @@ export default function AdminLayout() {
         </NavLink>
         <NavLink to="/admin/blog" className={({ isActive }) => `flex-1 py-3 text-center text-[11px] ${isActive ? "text-accent" : "text-white/70"}`}>
           <Newspaper className="w-5 h-5 mx-auto mb-1" /> Articles
+        </NavLink>
+        <NavLink to="/admin/gallery" className={({ isActive }) => `flex-1 py-3 text-center text-[11px] ${isActive ? "text-accent" : "text-white/70"}`}>
+          <ImageIcon className="w-5 h-5 mx-auto mb-1" /> Gallery
         </NavLink>
         <NavLink to="/admin/newsletter" className={({ isActive }) => `flex-1 py-3 text-center text-[11px] ${isActive ? "text-accent" : "text-white/70"}`}>
           <Mail className="w-5 h-5 mx-auto mb-1" /> Subs
