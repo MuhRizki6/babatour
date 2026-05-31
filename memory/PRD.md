@@ -40,6 +40,16 @@ Indonesian Muslim families/individuals (mostly mobile) researching umrah/hajj pa
 - ✅ Floating WhatsApp pulsing button
 - ✅ Mobile responsive with hamburger menu
 
+## Iteration 5 (2025-12) — Gallery Albums with Popup Lightbox
+- ✅ **Album system** — full MongoDB CRUD (`/api/admin/albums` + public `/api/albums/public[/{slug}]`)
+- ✅ **Homepage Gallery** now shows 4 album cards (cover + photo count + event date) with **"Lihat Galeri Lengkap"** link to /gallery
+- ✅ **`/gallery` page** — dedicated album browsing with hero & grid of all published albums
+- ✅ **AlbumLightbox** — full-screen popup with prev/next buttons, ArrowLeft/ArrowRight keyboard nav, Escape to close, thumbnail strip, image counter
+- ✅ **Admin `/admin/gallery`** — list albums with publish/edit/delete; editor lets you add images by URL, set cover, drag-friendly grid with set-cover/remove on hover
+- ✅ 3 albums auto-seeded (Umroh VIP Maret, Umroh Plus Turki Mei, Haji Khusus 2024)
+- ✅ Admin sidebar now has 5 sections: Inquiries / Packages / Articles / Gallery / Newsletter
+- ✅ Tested: 100% (11/11 backend + all critical frontend flows)
+
 ## Iteration 4 (2025-12) — Packages CRUD + Server-side PDF + Gallery + Newsletter
 - ✅ **Packages CRUD**: moved from static file to MongoDB. Admin CRUD at `/admin/packages` with full editor (name, fullTitle, hero image, gallery, itinerary, hotels, flights, transports, bonuses, includes/excludes/highlights/terms, publish toggle). Public endpoint `GET /api/packages/public` and `/api/packages/public/{id}`. Seeded 4 default packages on startup (idempotent).
 - ✅ **Server-side PDF** with WeasyPrint at `GET /api/packages/{id}/pdf` — generates 3-page A4 PDF (cover/summary, day-by-day itinerary table, terms/contact). Replaces frontend window.print(). Consistent output regardless of user's browser.
